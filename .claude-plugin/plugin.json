@@ -5,5 +5,7 @@
   "author": {
     "name": "Kyle Holzinger",
     "url": "https://github.com/avegancafe"
-  }
+  },
+  "homepage": "https://github.com/avegancafe/claude-plugin-avegancafe",
+  "repository": "https://github.com/avegancafe/claude-plugin-avegancafe"
 }
