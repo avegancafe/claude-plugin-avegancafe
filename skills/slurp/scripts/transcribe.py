@@ -63,13 +63,18 @@ def recorded_at(recorder_id: str) -> datetime | None:
 
 
 def vault_notes(vault: Path) -> dict[str, Path]:
-    """recorder_id -> note path, from each note's `recorder_id:` frontmatter line."""
+    """recorder_id -> note path, from each note's `recorder_id:` frontmatter line.
+
+    A note merged from several recordings (merge.py) has `recorder_id: <id1>+<id2>`; each id
+    maps to it.
+    """
     notes = {}
     for md in vault.rglob("*.md") if vault.is_dir() else []:
         with md.open(encoding="utf-8", errors="replace") as f:
             for line in f:
                 if line.startswith("recorder_id:"):
-                    notes[line.split(":", 1)[1].strip()] = md
+                    for rid in line.split(":", 1)[1].strip().split("+"):
+                        notes[rid.strip()] = md
                     break
                 if line.startswith("## "):  # past the frontmatter
                     break

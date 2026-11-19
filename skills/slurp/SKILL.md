@@ -62,6 +62,23 @@ nearest speaker. It adds `speaker` and `speaker_sim` to each segment. About 30 s
   event's attendee list is an upper bound, not a count, so leave the flag off there.
 - Exit 1 = too little long speech to diarize (a near-empty recording). Render it without labels.
 
+### Split recordings
+
+Kyle sometimes stops and restarts the recorder mid-meeting, leaving one conversation in two or
+more files. Merge them before diarizing when Kyle says so, or when back-to-back recordings fall
+inside the same calendar event (step 3) with only a minute or two between them:
+
+```bash
+uv run "${CLAUDE_PLUGIN_ROOT}/skills/slurp/scripts/merge.py" /tmp/slurp/261119_1402 /tmp/slurp/261119_1439
+```
+
+It writes `/tmp/slurp/261119_1402+261119_1439/`: the audio joined with silence filling the gap,
+so offsets and wall-clock times stay true, and one transcript with each part's segments shifted
+into place. Diarize **that** dir once, so `S1`/`S2` mean the same person in every part. Then write
+one note from it as usual. Give the parts and the gap's offsets in `recording_notes`. The note's
+`recorder_id: 261119_1402+261119_1439` marks every part `transcribed` on later runs. Gaps come
+from the minute-precision recorder ids, so they're good to about a minute.
+
 To see what's on the device without transcribing anything (Kyle asks "what's on the recorder",
 "what hasn't been slurped yet"), run it with `--status`: each recording comes back `transcribed`
 (with its note) or `pending`.
